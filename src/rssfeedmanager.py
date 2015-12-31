@@ -1,4 +1,5 @@
 import feedparser
+import MLStripper
 
 class rssfeedmanager:
 
@@ -11,7 +12,11 @@ class rssfeedmanager:
 	# English RSS feed source repository, this is default
 	feedsourceseng = ["http://krebsonsecurity.com/feed/",
 						"https://threatpost.com/feed/",
-						"http://www.networkworld.com/category/security/index.rss"]
+						"http://www.networkworld.com/category/security/index.rss",
+						"http://feeds.feedburner.com/Securityweek?format=xml",
+						"http://www.eweek.com/security/rss/"]
+
+	markup_stripper = MLStripper.MLStripper()
 
 	# constructor : load RSS feeds into memory
 	def __init__(self):
@@ -37,16 +42,18 @@ class rssfeedmanager:
 	def getcurrentfeeddatalist(self):
 		return self.feedsdownloaded
 
-	# get article strings parsed like "description" && "title" from feed data 
-	def getarticles(self):
+	# get keyword string from "description" && "title" of feed data
+	def get_keyword_from_articles(self):
 		ret = []
 		for data in feedparser.getcurrentfeeddatalist():
 			for entry in data.entries:
 				if hasattr(entry, 'description'):
-					ret.append(entry.description)
+					rssfeedmanager.markup_stripper.feed(entry.description)
+					ret.extend(rssfeedmanager.markup_stripper.get_data().split())
 
 				if hasattr(entry, 'title'):
-					ret.append(entry.title)
+					rssfeedmanager.markup_stripper.feed(entry.title)
+					ret.extend(rssfeedmanager.markup_stripper.get_data().split())
 		return ret
 
 	# refresh feed datas
@@ -77,7 +84,7 @@ class rssfeedmanager:
 # usage example
 feedparser = rssfeedmanager()
 
-for data in feedparser.getarticles():
+for data in feedparser.get_keyword_from_articles():
 	print data
 
 
