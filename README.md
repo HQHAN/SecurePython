@@ -1,2 +1,2 @@
 # SecurePython
-This is team project for studying python
+This is a team project for studying python
