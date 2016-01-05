@@ -1,0 +1,6 @@
+# This is ignored files and directory
+
+*.pyc	# compile files from .py
+.idea/	# IDE related files
+
+
