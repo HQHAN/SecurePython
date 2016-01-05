@@ -4,17 +4,19 @@ import MLStripper
 class rssfeedmanager:
 
 	# Korean RSS feed source repository 
-	feedsources = ["http://www.boannews.com/media/news_rss.xml", 
+	feedsources = ["http://www.boannews.com/media/news_rss.xml",
 					"http://www.ahnlab.com/kr/site/rss/ahnlab_securitynews.xml", # latest security news
 					"http://www.ahnlab.com/kr/site/rss/ahnlab_securityfocus.xml ", # security issue
 					"http://company.ahnlab.com/company/site/rss/comRss/comRssPressRelease.do"] # security news on media
 
 	# English RSS feed source repository, this is default
-	feedsourceseng = ["http://krebsonsecurity.com/feed/",
-						"https://threatpost.com/feed/",
-						"http://www.networkworld.com/category/security/index.rss",
-						"http://feeds.feedburner.com/Securityweek?format=xml",
-						"http://www.eweek.com/security/rss/"]
+	feedsourceseng = ["http://krebsonsecurity.com/feed/"]
+
+	# feedsourceseng = ["http://krebsonsecurity.com/feed/",
+	# 					"https://threatpost.com/feed/",
+	# 					"http://www.networkworld.com/category/security/index.rss",
+	# 					"http://feeds.feedburner.com/Securityweek?format=xml",
+	# 					"http://www.eweek.com/security/rss/"]
 
 	markup_stripper = MLStripper.MLStripper()
 
@@ -45,7 +47,7 @@ class rssfeedmanager:
 	# get keyword string from "description" && "title" of feed data
 	def get_keyword_from_articles(self):
 		ret = []
-		for data in feedparser.getcurrentfeeddatalist():
+		for data in self.getcurrentfeeddatalist():
 			for entry in data.entries:
 				if hasattr(entry, 'description'):
 					rssfeedmanager.markup_stripper.feed(entry.description)
@@ -82,10 +84,10 @@ class rssfeedmanager:
 
 
 # usage example
-feedparser = rssfeedmanager()
-
-for data in feedparser.get_keyword_from_articles():
-	print data
+# feedparser = rssfeedmanager()
+#
+# for data in feedparser.get_keyword_from_articles():
+# 	print data
 
 
 
