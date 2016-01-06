@@ -10,7 +10,8 @@ class rssfeedmanager:
 					"http://company.ahnlab.com/company/site/rss/comRss/comRssPressRelease.do"] # security news on media
 
 	# English RSS feed source repository, this is default
-	feedsourceseng = ["http://krebsonsecurity.com/feed/"]
+	feedsourceseng = ["http://www.eweek.com/security/rss/",
+					  "http://feeds.feedburner.com/Securityweek?format=xml"]
 
 	# feedsourceseng = ["http://krebsonsecurity.com/feed/",
 	# 					"https://threatpost.com/feed/",
