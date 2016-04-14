@@ -1,7 +1,7 @@
 import feedparser
 import MLStripper
 import ushlex
-
+from presenter.browseropener import browseropener
 
 class rssfeedmanager:
     # Korean RSS feed source repository
@@ -21,11 +21,12 @@ class rssfeedmanager:
     # 					"http://www.eweek.com/security/rss/"]
 
     # Filter list
+    # !! Just add word that starts with unique word !!
     filterList = ["access control",
-                  "access control list",
-                  "access control service",
-                  "access management access",
-                  "access matrix",
+                  # "access control list",
+                  # "access control service",
+                  # "access management access",
+                  # "access matrix",
 
                   "account harvesting",
                   "ack piggybacking",
@@ -35,10 +36,10 @@ class rssfeedmanager:
                   "advanced encryption standard",
 
                   "asymmetric cryptography",
-                  "asymmetric warfare",
+                  # "asymmetric warfare",
                   "Two-Factor Authentication",
                   "Simple Attacks",
-                  "The Security"]
+                  "nuclear regulatory"]
 
     markup_stripper = MLStripper.MLStripper()
 
@@ -152,9 +153,10 @@ class rssfeedmanager:
             self.filter_dictionary[filter[0]] = filter
 
 # usage example
-feedparser = rssfeedmanager()
+# feedparser = rssfeedmanager()
 
 # for data in feedparser.get_keyword_from_articles():
 #     print data
 
 # print feedparser.get_keyword_from_articles()
+browseropener.opengoogletrendpage(['security', 'AES', 'DES', 'encryption', 'hans'])
