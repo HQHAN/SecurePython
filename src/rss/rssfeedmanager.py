@@ -1,5 +1,6 @@
 import feedparser
 import MLStripper
+import ushlex
 
 
 class rssfeedmanager:
@@ -19,13 +20,37 @@ class rssfeedmanager:
     # 					"http://feeds.feedburner.com/Securityweek?format=xml",
     # 					"http://www.eweek.com/security/rss/"]
 
+    # Filter list
+    filterList = ["access control",
+                  "access control list",
+                  "access control service",
+                  "access management access",
+                  "access matrix",
+
+                  "account harvesting",
+                  "ack piggybacking",
+                  "active content",
+                  "activity monitors",
+                  "Address Resolution Protocol",
+                  "advanced encryption standard",
+
+                  "asymmetric cryptography",
+                  "asymmetric warfare",
+                  "Two-Factor Authentication",
+                  "Simple Attacks",
+                  "The Security"]
+
     markup_stripper = MLStripper.MLStripper()
 
     # constructor : load RSS feeds into memory
     def __init__(self):
         # declare instance variable that will store downloaded feed data
         self.feedsdownloaded = []
+        self.filter_dictionary = {}
         self.isfeedsourceeng = True
+
+        # init filter dictinary
+        self.__initfilterdictionary(rssfeedmanager.filterList)
 
         # download the feed datas from the feedsources
         self.__downloadfeeddata()
@@ -56,7 +81,8 @@ class rssfeedmanager:
                 if hasattr(entry, 'title'):
                     rssfeedmanager.markup_stripper.feed(entry.title)
                     ret.extend(rssfeedmanager.markup_stripper.get_data().split())
-        return ret
+
+        return self.__reorganizekeywordlist(ret)
 
     # refresh feed datas
     def refreshfeeddata(self):
@@ -82,8 +108,53 @@ class rssfeedmanager:
         else:
             return rssfeedmanager.feedsource
 
+    # return reorganized keyword list using reference security keyword table,
+    def __reorganizekeywordlist(self, sourceStringList):
+
+        result = []
+        current_state = "start"
+        sourceStringList = list(map(lambda x: x.lower(), sourceStringList))
+
+        for source in sourceStringList:
+
+            if current_state == "start":
+                if source in self.filter_dictionary:
+                    current_state = "check"
+                    start_word = source
+                    checking_index = 1
+                else:
+                    result.append(source)
+
+            elif current_state == "check":
+                filterword_list = self.filter_dictionary[start_word]
+
+                if source in filterword_list and filterword_list.index(source) == checking_index:
+                    checking_index += 1
+                    if checking_index == len(filterword_list):
+                        result.append(' '.join(self.filter_dictionary[start_word]))
+                        current_state = "start"
+                else:
+                    current_state = "start"
+                    result.append(source)
+
+        return result
+
+    # initialize filter dictionary
+    def __initfilterdictionary(self, filterlist):
+
+        # make it lower as python is case-sensitive for string comparison
+        filterlist = list(map(lambda x:x.lower(), filterlist))
+
+        self.filter_dictionary.clear()
+
+        for filterword in filterlist:
+            filter = ushlex.split(filterword)
+            self.filter_dictionary[filter[0]] = filter
+
 # usage example
-# feedparser = rssfeedmanager()
-#
+feedparser = rssfeedmanager()
+
 # for data in feedparser.get_keyword_from_articles():
-# 	print data
+#     print data
+
+# print feedparser.get_keyword_from_articles()
