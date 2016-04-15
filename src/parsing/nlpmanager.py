@@ -3,6 +3,7 @@
 from nltk.corpus import stopwords
 from rss.rssfeedmanager import rssfeedmanager
 from operator import itemgetter
+from presenter.browseropener import browseropener
 
 
 class nlpManager:
@@ -10,7 +11,7 @@ class nlpManager:
     englishStopwords = ['that', 'every', 'made', 'make', 'among', 'oldest', 'common', 'sold', 'type', 'become', 'includes',
                         'recently', 'sure', 'like', 'turns', 'i\'m', 'a', 'off', 'today', 'sixth', 'you\'re', 'old',
                         'can\'t', 'know', 'remember', 'tipped', 'that\'s', 'middle', 'dating', 'know', 'getting', 'one',
-                        'other', 'oldest', '6th', 'fixes', 'site\'s', 'including', 'new', 'the', 'read', 'help']
+                        'other', 'oldest', '6th', 'fixes', 'site\'s', 'including', 'new', 'the', 'read', 'help', 'could']
 
     koreanStopwords = []
 
@@ -24,9 +25,12 @@ class nlpManager:
         # Get tokens from RSS feeds
         feedparser = rssfeedmanager()
         word_list = feedparser.get_keyword_from_articles()
+        # word_list.append('denial of service')
+        # word_list.append('dictionary attack')
+        # word_list.append('botnet')
         # word_list = ['ack piggybacking', 'security', 'help', 'apple', 'access list', 'firmware']
 
-        print('Total words : %', len(word_list))
+        print 'Total words : %d' % len(word_list)
         print('\n')
 
         # Remove stopwords related with special characters
@@ -37,26 +41,38 @@ class nlpManager:
 
         # Remove stopwords with nltk library
         filtered_words_rss = [word for word in filtered_words_blank if word not in stopwords.words('english')]
-        print('Removed stopwords : %', len(filtered_words_rss))
+        print 'Removed stopwords : %d' % len(filtered_words_rss)
         print('\n')
 
         # Remove custom stopwords
         filtered_words_custom = self.removestopwords(filtered_words_rss, 'english')
-        print('Removed custom stopwords : %', len(filtered_words_custom))
+        print 'Removed custom stopwords : %d' % len(filtered_words_custom)
         print('\n')
 
         # Count words
         counted_words = self.countwords(filtered_words_custom)
-        print('Counted words : %', len(counted_words))
+        print 'Counted words : %d' % len(counted_words)
         print('\n')
 
         # Weighted word count
-        weighted_words = self.weightedwords(counted_words, 5000)
-        print('Weighted words : %', len(weighted_words))
-        print("\n")
+        weighted_words = self.weightedwords(counted_words, 1000)
+        print 'Weighted words : %d' % len(weighted_words)
+        print('\n')
+
+        # Search from Google Trend API
+        security_keywords = weighted_words[0:5]
+        top_keywords = []
+        for keywordsDictionary in security_keywords:
+            top_keywords.append(keywordsDictionary[0])
+
+        print 'Top 5 Keywords : %s' % top_keywords
+        print('\n')
+
+        # Open web browser
+        browseropener.opengoogletrendpage(top_keywords)
 
         iteration = 0
-        while iteration < 100:
+        while iteration < 10:
             print(weighted_words[iteration])
             iteration += 1
 
@@ -172,6 +188,7 @@ class nlpManager:
             if (progressIndex % 1000) == 0:
                 print "Weighting words : (%d) / (%d)" % (progressIndex, totalLength)
 
+        filteredWords = sorted(filteredWords, key=itemgetter(1,0), reverse=True)
         return filteredWords
 
 
