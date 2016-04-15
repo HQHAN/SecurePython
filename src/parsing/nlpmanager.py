@@ -7,10 +7,10 @@ from operator import itemgetter
 
 class nlpManager:
 
-    englishStopwords = ['that', 'every', 'made', 'among', 'oldest', 'common', 'sold', 'type', 'become', 'includes',
+    englishStopwords = ['that', 'every', 'made', 'make', 'among', 'oldest', 'common', 'sold', 'type', 'become', 'includes',
                         'recently', 'sure', 'like', 'turns', 'i\'m', 'a', 'off', 'today', 'sixth', 'you\'re', 'old',
                         'can\'t', 'know', 'remember', 'tipped', 'that\'s', 'middle', 'dating', 'know', 'getting', 'one',
-                        'other', 'oldest', '6th', 'fixes', 'site\'s', 'including', 'new']
+                        'other', 'oldest', '6th', 'fixes', 'site\'s', 'including', 'new', 'the', 'read', 'help']
 
     koreanStopwords = []
 
@@ -24,8 +24,10 @@ class nlpManager:
         # Get tokens from RSS feeds
         feedparser = rssfeedmanager()
         word_list = feedparser.get_keyword_from_articles()
+        # word_list = ['ack piggybacking', 'security', 'help', 'apple', 'access list', 'firmware']
 
         print('Total words : %', len(word_list))
+        print('\n')
 
         # Remove stopwords related with special characters
         filtered_words_special = self.removespecialchar(word_list, self.specialStopwords)
@@ -36,19 +38,26 @@ class nlpManager:
         # Remove stopwords with nltk library
         filtered_words_rss = [word for word in filtered_words_blank if word not in stopwords.words('english')]
         print('Removed stopwords : %', len(filtered_words_rss))
+        print('\n')
 
         # Remove custom stopwords
         filtered_words_custom = self.removestopwords(filtered_words_rss, 'english')
         print('Removed custom stopwords : %', len(filtered_words_custom))
+        print('\n')
 
         # Count words
         counted_words = self.countwords(filtered_words_custom)
         print('Counted words : %', len(counted_words))
+        print('\n')
+
+        # Weighted word count
+        weighted_words = self.weightedwords(counted_words, 5000)
+        print('Weighted words : %', len(weighted_words))
         print("\n")
 
         iteration = 0
         while iteration < 100:
-            print(counted_words[iteration])
+            print(weighted_words[iteration])
             iteration += 1
 
         ################################################################################################
@@ -66,11 +75,20 @@ class nlpManager:
         words_lowercase = map(lambda x:x.lower(), words)
         words_copy = list(words_lowercase)
         filtered_words = list(words_lowercase)
+
+        # Show progress status
+        progressIndex = 0
+        totalLength = len(words_copy)
+
         for word in words_copy:
             for removedWord in stopwords:
                 if word == removedWord:
                     if removedWord in filtered_words:
                         filtered_words.remove(removedWord)
+            progressIndex = progressIndex + 1
+
+            if (progressIndex % 1000) == 0:
+                print "Removing custom stopwords : (%d) / (%d)" % (progressIndex, totalLength)
 
         return filtered_words
 
@@ -99,6 +117,10 @@ class nlpManager:
     # Count words
     def countwords(self, words):
 
+        # Show progress status
+        progressIndex = 0
+        totalLength = len(words)
+
         filteredWords = []
         for word_source in words:
             count = 0
@@ -107,10 +129,50 @@ class nlpManager:
                     count += 1
             filteredWords.append([word_source, count])
 
+            progressIndex = progressIndex + 1
+
+            if (progressIndex % 1000) == 0:
+                print "Counting words : (%d) / (%d)" % (progressIndex, totalLength)
+
         filteredWords = sorted(filteredWords, key=itemgetter(1,0), reverse=True)
         deduplicatedWords = [filteredWords[i] for i in range(len(filteredWords)) if i==0 or filteredWords[i] != filteredWords[i-1]]
         return deduplicatedWords
 
+
+    # Weighted words count
+    def weightedwords(self, words, weight):
+
+        filteredWords = []
+        securityDictionary = []
+
+        file = open("./security_dictionary", 'r')
+        while True:
+            line = file.readline()
+            if not line: break
+            securityDictionary.append(line.strip())
+        file.close()
+
+        # Show progress status
+        progressIndex = 0
+        totalLength = len(words)
+
+        word_count = 0
+        for word_source in words:
+            for dic_source in securityDictionary:
+                if word_source[0] == dic_source:
+                    word_count = word_source[1] + weight
+                    break
+                else:
+                    word_count = word_source[1]
+
+            filteredWords.append([word_source[0], word_count])
+
+            progressIndex = progressIndex + 1
+
+            if (progressIndex % 1000) == 0:
+                print "Weighting words : (%d) / (%d)" % (progressIndex, totalLength)
+
+        return filteredWords
 
 
 

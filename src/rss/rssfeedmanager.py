@@ -5,10 +5,10 @@ from presenter.browseropener import browseropener
 
 class rssfeedmanager:
     # Korean RSS feed source repository
-    feedsources = ["http://www.boannews.com/media/news_rss.xml",
-                   "http://www.ahnlab.com/kr/site/rss/ahnlab_securitynews.xml",  # latest security news
-                   "http://www.ahnlab.com/kr/site/rss/ahnlab_securityfocus.xml ",  # security issue
-                   "http://company.ahnlab.com/company/site/rss/comRss/comRssPressRelease.do"]  # security news on media
+    # feedsources = ["http://www.boannews.com/media/news_rss.xml",
+    #                "http://www.ahnlab.com/kr/site/rss/ahnlab_securitynews.xml",  # latest security news
+    #                "http://www.ahnlab.com/kr/site/rss/ahnlab_securityfocus.xml ",  # security issue
+    #                "http://company.ahnlab.com/company/site/rss/comRss/comRssPressRelease.do"]  # security news on media
 
     # English RSS feed source repository, this is default
     feedsourceseng = ["http://www.eweek.com/security/rss/",
