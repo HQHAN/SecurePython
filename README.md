@@ -22,7 +22,7 @@ For older versions of Python it might be necessary to install setuptools (see ht
 ## ushlex
 As this project has a dependecy with ushlex(https://bitbucket.org/mixmastamyk/ushlex), you should install it.
 
-To install NLTK on your computer, open your terminal and install it using "pip" (A tool for installing and managing Python packages)
+To install ushlex on your computer, open your terminal and install it using "pip" (A tool for installing and managing Python packages)
 ex) sudo pip install -U ushlex
 
 Or if you are using a Pycharm, just go to Preferences > Project Interpreter > Press + button and install "ushlex"
