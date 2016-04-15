@@ -1,5 +1,5 @@
 import webbrowser
-
+import urllib
 
 class browseropener:
 
@@ -9,6 +9,7 @@ class browseropener:
         url = "https://www.google.com/trends/explore#q="
 
         for param in list:
+            param = urllib.pathname2url(param)
             url += param + "%2C%20" # hex code for comma(,) and space delimeter
 
         webbrowser.open(url)
